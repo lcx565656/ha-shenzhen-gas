@@ -37,10 +37,28 @@ https://wechat.szgas.com.cn/api/handle/network/queryDayData
 请求头里会有类似下面的字段：
 
 ```text
-CodeId: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+CodeId: o3Qsf5xxxxxxxxxxxxxxxxxxxxxx
+accountChannelId: 123456789
 ```
 
-复制冒号后面的完整值，填入 Home Assistant 集成配置页的 `CodeId`。
+只需要复制 `CodeId` 冒号后面的完整值，填入 Home Assistant 集成配置页的 `CodeId`。
+
+`accountChannelId` **不用填**：集成会用 `CodeId` 调
+`/api/handle/fraccountchannel/findAccountByOpenID` 自动解析出来，每次请求现取现用，
+不写进配置项。
+
+## 这两个值分别是什么
+
+| 字段 | 含义 |
+| --- | --- |
+| `CodeId` | 微信小程序登录后的 `openid`，标识"你是哪个小程序用户" |
+| `accountChannelId` | 该 openid 在小程序里的渠道账号 id，标识"你能看哪个账号的数据" |
+
+深圳燃气的业务接口会同时校验这两个值。只带 `CodeId` 而 `accountChannelId` 不对时，
+接口返回 `40510 无权限访问！`；`CodeId` 本身无效时返回 `40507 没有查询到对应的渠道信息`。
+
+旧版本集成把一个固定的 `accountChannelId` 写死了，所以除原作者以外的人都会遇到
+40510。当前版本改为按 `CodeId` 自动解析，并会清掉旧配置项里残留的渠道号字段。
 
 ## 注意事项
 
@@ -53,7 +71,8 @@ CodeId: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 深圳燃气的部分业务接口会校验 `CodeId`。实测同一个接口、同一个客户号：
 
-- 不带 `CodeId`：返回缺少参数或页面加载失败。
-- 带 `CodeId`：可以正常返回账单数据。
+- 不带 `CodeId`：返回 `HTTP 500 页面加载失败`。
+- 带 `CodeId` 但 `accountChannelId` 不匹配：返回 `40510 无权限访问！`。
+- 两者都正确：正常返回数据。
 
 所以当前版本仍需要用户手动获取一次 `CodeId`。

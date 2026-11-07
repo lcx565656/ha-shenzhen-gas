@@ -4,10 +4,8 @@
     "step": {
       "user": {
         "title": "添加深圳燃气",
-        "description": "请输入从深圳燃气微信小程序请求头里抓取到的 CodeId。",
+        "description": "请输入从深圳燃气微信小程序请求头里抓取到的 CodeId。客户号、表号、渠道号都会自动识别。CodeId 只保存在你自己 Home Assistant 的配置项里。",
         "data": {
-          "ccb_cust_no": "客户号",
-          "meter_no": "燃气表号",
           "code_id": "CodeId"
         }
       },
@@ -19,11 +17,31 @@
       }
     },
     "error": {
-      "cannot_connect": "连接失败，请检查 CodeId 是否完整，或微信小程序中是否已经绑定深圳燃气账户",
-      "no_accounts": "未读取到绑定账户，请确认微信小程序中已经绑定深圳燃气账户"
+      "cannot_connect": "连接失败：无法访问深圳燃气接口，请检查 HA 能否访问 wechat.szgas.com.cn（详细原因见 HA 日志）",
+      "invalid_code_id": "CodeId 无效：服务端没有匹配到对应的小程序账号。请重新抓取深圳燃气小程序请求头里的 CodeId（它是 openid，形如 o3Qsf5xxxxxxxxxxxxxxxxxxx）",
+      "code_id_rejected": "该 CodeId 被服务端拒绝访问（40510），通常表示它已失效，请重新抓取",
+      "no_accounts": "CodeId 有效，但该微信账号还没有在小程序里绑定深圳燃气账户"
     },
     "abort": {
       "already_configured": "该燃气表已经添加过"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "深圳燃气设置",
+        "description": "CodeId 失效时在这里重新填写即可，不需要删除集成。",
+        "data": {
+          "code_id": "CodeId",
+          "update_interval_minutes": "刷新间隔（分钟）"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "连接失败：无法访问深圳燃气接口（详细原因见 HA 日志）",
+      "invalid_code_id": "CodeId 无效：服务端没有匹配到对应的小程序账号",
+      "code_id_rejected": "该 CodeId 被服务端拒绝访问（40510），请重新抓取",
+      "invalid_update_interval": "刷新间隔请填 5 ~ 1440 分钟之间的整数"
     }
   }
 }
