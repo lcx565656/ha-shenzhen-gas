@@ -32,7 +32,7 @@
 4. 添加仓库：
 
    ```text
-   https://github.com/Chaxcy/ha-shenzhen-gas
+   https://github.com/lcx565656/ha-shenzhen-gas
    ```
 
 5. 类别选择“集成”。
